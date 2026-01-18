@@ -1,44 +1,31 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from sqlalchemy.orm import Session
-from db.session import SessionLocal, engine
-from db.models import Hello
+
+from db.session import init_db
+from services.scrapper import scrapper
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-def init_db():
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        # Check if "Hello world" already exists
-        exists = db.query(Hello).first()
-        if not exists:
-            hello = Hello(text="Hello world")
-            db.add(hello)
-            db.commit()
-    finally:
-        db.close()
 
-def get_db():
-    db = SessionLocal()
-    
-    try:
-        yield db
-    except:
-        db.close()
+@app.get("/article")
+def get_article(word: str, start_date: str, end_date: str):
+    articles = scrapper(word, start_date, end_date)
 
-@app.get("/")
-def read_root(db:Session = Depends(get_db)):
-
-    item = db.query(Hello).first()
-
-    if not item:
-        return "None"
-    
-    return item.text 
+    return articles
 
 
 if __name__ == "__main__":
-    app.add_event_handler("startup", init_db)
+    init_db()
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
