@@ -252,7 +252,9 @@ const App: React.FC = () => {
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>Published</th>
-                                <th>Link</th>
+                                <th>Source</th>
+                                <th>PDF</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -267,6 +269,12 @@ const App: React.FC = () => {
                                         <td>{article.author}</td>
                                         <td>{article.published_date}</td>
                                         <td>
+                                            <a href={article.link} target="_blank" rel="noopener noreferrer">Link</a>
+                                        </td>
+                                        <td>
+                                            <a href={`${API_URL}/${article.pdf_path}`} target="_blank" rel="noopener noreferrer">PDF</a>
+                                        </td>
+                                        <td>
                                             <button className={style.detailsBtn}>
                                                 {openArticleId === article.id ? "Hide" : "Details"}
                                             </button>
@@ -275,7 +283,7 @@ const App: React.FC = () => {
 
                                     {openArticleId === article.id && (
                                         <tr className={style.expandedRow}>
-                                            <td colSpan={5}>
+                                            <td colSpan={7}>
                                                 <div className={style.expandedContent}>
                                                     <div className={style.pdfBlock}>
                                                         <strong>PDF:</strong>{" "}
@@ -290,8 +298,8 @@ const App: React.FC = () => {
 
                                                     <div className={style.textBlock}>
                                                         <strong>Content:</strong>
-                                                        <p>
-                                                            {article.content.content || "No content"}
+                                                        <p style={{ whiteSpace: "pre-wrap" }}>
+                                                            {article.content.content?.trim() ? article.content.content : "No content"}
                                                         </p>
                                                     </div>
                                                 </div>

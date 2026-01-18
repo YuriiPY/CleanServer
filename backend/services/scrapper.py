@@ -102,7 +102,9 @@ def scrapper(word: str, input_start_date: str, input_end_date: str):
                 paragraphs_text = ""
                 for paragraph in paragraphs:
                     paragraphs_text += paragraph.text.strip() + '\n'
-                file_path = f"{article.get('id')}_{article.get('title')}_{article.get('author')}.pdf"
+                import re
+                safe_title = re.sub(r'[\\/*?:"<>|]', "", article.get('title'))
+                file_path = f"{article.get('id')}_{safe_title}_{article.get('author')}.pdf"
 
                 pdf_file_path = PDF_PATH / file_path
 
